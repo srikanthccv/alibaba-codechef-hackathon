@@ -18,7 +18,7 @@ import application.user as user
 from pymongo import MongoClient
 from pprint import pprint #to proper proper data
 
-monClient = MongoClient('mongodb://root:Du88qrb1W8U0@incredibles2.mongodb.ap-south-1.rds.aliyuncs.com:3717/admin')
+monClient = MongoClient('mongodb://root:XXXXXXXXXXXX@incredibles2.mongodb.ap-south-1.rds.aliyuncs.com:3717/admin')
 monDB = monClient.admin
 
 app = Flask(__name__, template_folder='./templates')
