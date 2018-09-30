@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+{% block body %}
+<!-- <script src="https://code.highcharts.com/highcharts.js"></script> -->
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<style>
+	.highcharts-range-selector-group,.highcharts-subtitle{
+		display: none;
+	}
+</style>
+<div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+<script type="text/javascript">
+	var chart = Highcharts.chart('container', {
+		chart: {
+			type: 'column',
+		},
+		title: {
+			text: "{{ friend_username }}'s submissions activity"
+		},
+		subtitle: {
+			text: 'Source: Codechef.com'
+		},
+		xAxis: {
+			categories: {{ intervals | safe }},
+			crosshair: true
+		},
+		yAxis: {
+			min: 0,
+			title: {
+				text: 'Submissions (#)'
+			}
+		},
+		tooltip: {
+			headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+			pointFormat: '<tr><td style="color:{series.color};padding:0">{}: </td>' +
+				'<td style="padding:0"><b>{point.y} submissions</b></td></tr>',
+			footerFormat: '</table>',
+			shared: true,
+			useHTML: true
+		},
+		plotOptions: {
+			column: {
+				pointPadding: 0.2,
+				borderWidth: 0
+			}
+		},
+		series: [{
+			name: "{{ friend_username }}",
+			data: {{ values | safe }},
+		}],
+	});
+</script>
+{% endblock %}

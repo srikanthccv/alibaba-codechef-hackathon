@@ -1,0 +1,72 @@
+{% extends 'layout.html' %}
+{% block body %}
+	{% for problem in tagProblemsUser %}
+		{% set problemCode = problem['problemCode'] %}
+		{% set contestCode = problem['contestCode'] %}
+			<div id="tell-to-friend-{{contestCode}}-{{problemCode}}" class="modal main-div fade" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-body">
+						<p>{{ contestCode }} - {{ problemCode }} </p>
+						<div class="form-group">
+							<label for="usr">Username : </label>
+							<select type="text" class="form-control user" id="user-{{contestCode}}-{{problemCode}}">
+								{% for friend in userFriends %}
+								<option>{{ friend['friend_username'] }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="success-message text-success"></div>
+						<div class="error-message text-warning"></div>
+					</div>
+					<div class="modal-footer">
+						<div class="btn btn-primary recommend-friend-modal" data-contest-code="{{contestCode}}" data-problem-code="{{problemCode}}" data-username="{{friend_username}}">Recommend</div>
+						<button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+			</div>
+			<div class="problems" style="border: 1px solid green;padding: 10px;">
+				<h3>{{ contestCode }} - {{ problemCode }}<span class="entypo-down-open"></span></h3>
+				<p><br>
+					<button class="btn btn-primary btn-sm view-problem" data-contest-code='{{contestCode}}' data-problem-code="{{ problemCode}}" data-username="{{friend_username}}" onclick='window.open("https://www.codechef.com/{{contestCode}}/problems/{{problemCode}}")'>View Problem</button>
+					<button class="btn btn-dark btn-sm" data-toggle="modal" data-target="#tell-to-friend-{{contestCode}}-{{problemCode}}">Recommend to a friend</button>
+				</p>
+			</div>
+			<br>
+	{% endfor %}
+<div class="problem-solution"></div>
+<script type="text/javascript">
+	$(".main-div").on("hidden.bs.modal", function(){
+		$(".success-message").html("");
+		$(".error-message").html("");
+	});
+	$(".recommend-friend-modal").click(function() {
+		let contestCode = $(this).data('contestCode');
+		let problemCode = $(this).data('problemCode');
+		let username = $("#user-" + contestCode + "-" + problemCode).val();
+		$.ajax({
+			type: "POST",
+			url: '/suggestToFriend',
+			data: {problemCode: problemCode, contestCode: contestCode, username: username},
+			success: function(data) {
+				if(data.status == 'success') {
+					$(".success-message").html("").html(data.message);
+					setTimeout(function() {
+						$(".success-message").html("");
+					}, 5000);
+				} else {
+					$(".error-message").html("").html(data.message);
+					setTimeout(function() {
+						$(".error-message").html("");
+					}, 5000);
+				}
+			},
+			error: function() {
+
+			}
+		});
+	});
+</script>
+{% endblock %}

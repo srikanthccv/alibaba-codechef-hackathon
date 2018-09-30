@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    {% if data.success %}
+    <h5><strong>{{ data.friend_username }}</strong> submission's since your last visit on {{data.timestamp}} ago
+        <button onclick='friendProfile("{{ data.friend_username }}", 1, 0)' class="btn btn-info">
+            <i class="fas fa-redo-alt"></i> Fetch Again
+        </button>
+        <button onclick='friendProfile("{{ data.friend_username }}", 0, 1)' class="btn btn-warning">
+                <i class="fas fa-list"></i> Show All
+        </button>
+    </h5>
+    <hr>
+    <div id='profileDiv'></div>
+    {% else %}
+    <h5>{{ data.message }}</h5>
+    {% endif %}
+    <script type="text/javascript">
+        friendProfile("{{ data.friend_username }}");
+        setTimeout(function(){ logVisit("{{ data.friend_username }}") }, 3000);
+    </script>   
+{% endblock %}

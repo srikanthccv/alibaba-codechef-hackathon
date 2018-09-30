@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Jack Jack</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/styles/metro/notify-metro.css" integrity="sha256-v3mQGhTBgiQ33BTFlC/Ude5iEPSmu7UOqpn4CassYbQ=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+</head>
+<body>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>    
+    <script src="/static/js/jackjack.js"></script>
+    {% include 'includes/_navbar.html' %}
+    <div class="container">
+        {% block body %}{% endblock %}
+    </div>
+    <!-- <script src="main.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js" integrity="sha256-tSRROoGfGWTveRpDHFiWVz+UXt+xKNe90wwGn25lpw8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/styles/metro/notify-metro.min.js" integrity="sha256-IHzEWPqZSg6vO7WlcyvHoX8W45F6yBwUDYFTxEUAsrk=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js" integrity="sha256-CutOzxCRucUsn6C6TcEYsauvvYilEniTXldPa6/wu0k=" crossorigin="anonymous"></script>
+    {% if session['username']|length > 1 %}
+    <script>
+        $(document).ready(() => {
+            $("#nav-usersearch").select2({
+                ajax: {
+                    url: "/api/search",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q_username: params.term,
+                            q_offset: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        var select2data = $.map(data.users, function(obj) {
+                            obj.id = obj.username || obj._id.$oid;
+                            obj.text = obj.fullname || obj.descricao;
+                            return obj;
+                        });
+                        params.page = params.page || 1;
+                        return {
+                            results: select2data,
+                            pagination: {
+                                more: (params.page * 20) < (select2data.length + Number.MAX_VALUE)
+                            }
+                        };
+                    },
+                    cache: true,
+                },
+                placeholder: 'Search for user',
+                minimumInputLength: 1,
+                templateResult: formatUser,
+            });
+        });
+
+        function formatUser(user) {
+            if (user.loading) {
+                return user.text;
+            }
+            var markup = $("<div><strong>" + user.username + "</strong><br>" + user.fullname + "</br></div>");
+            return markup;
+        }
+
+        $('#nav-usersearch').on('select2:select', function (e) {
+            var data = e.params.data;
+            postdata = {searched_user : data.username, searched_fullname : data.fullname}
+            $.ajax({
+                url: '/api/logusersearch',
+                type: "POST",
+                data: JSON.stringify(postdata),
+                contentType: "application/json",
+                success: function (result) {
+                    if (result.data.success) {
+                        $.notify(result.data.message, 'success');
+                        fetchFriends();
+                    }
+                    else {
+                        $.notify(result.message, 'error');
+                    }
+                },
+                error: function () {
+                    $.notify("Some error occured. Try again later", "error");
+                }
+            });
+        });
+    </script>
+    {% endif %}
+</body>
+</html>
