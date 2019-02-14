@@ -55,6 +55,9 @@ python3 app.py
 
 * Srikanth Chekuri, D Chenna Raidu
 
+## Video
+
+App: https://goo.gl/WdHXxK
 
 ## Acknowledgments
 
