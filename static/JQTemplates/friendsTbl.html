@@ -1,0 +1,33 @@
+<script type="text/x-jquery-tmpl" id="FriendsTmpl">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Friend Name</th>
+                <th scope="col">Friend Username</th>
+                <th scope="col">Last Visited</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{each userf}}
+            <tr>
+                <th scope="row">*</th>
+                <td>${friend_fullname}</td>
+                <td>${friend_username}</td>
+                <td>${moment(timestamp).fromNow()}</td>
+                <td>
+                    <button type="button" class="btn btn-success" onclick="location.href='/profile/${friend_username}'"
+                        data-friend_id=${friend_id}><i class="fa fa-user"></i> View Submissions</button>
+                    <button type="button" class="btn btn-primary" onclick="location.href='/stats/tags/${friend_username}'"
+                        data-friend_id=${friend_id}><i class="fas fa-eye"></i> View Stats</button>
+                    <button type="button" class="btn btn-info" onclick="location.href='/activetime/${friend_username}'"
+                        data-friend_id=${friend_id}><i class="fas fa-eye"></i> View Active Time</button>
+                    <button type="button" class="btn btn-danger" onclick='deleteFriend("${friend_id}");'><i class="fa fa-trash-alt"></i>
+                        Remove</button>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+<script>

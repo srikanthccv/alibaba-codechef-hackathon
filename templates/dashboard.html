@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h5> Welcome {{ session['fullname'] }}</h3>
+    <hr>
+    <div id='friendsDiv'></div>
+
+    <script type="text/javascript">
+        fetchFriends();
+    </script>
+{% endblock %}
